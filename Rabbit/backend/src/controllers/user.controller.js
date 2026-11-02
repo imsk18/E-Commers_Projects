@@ -16,39 +16,39 @@ export const handleRegister = async (req, res) => {
     user = new userModel({ name, email, password });
     await user.save();
 
-    const payload = {user:{id:user._id,role:user.role}}
+    // const payload = {user:{id:user._id,role:user.role}}
 
-    jwt.sign(payload,process.env.JWT_SECRET, {expiresIn:"24h"}, (err,token)=>{
-        if(err) throw err;
+    // jwt.sign(payload,process.env.JWT_SECRET, {expiresIn:"24h"}, (err,token)=>{
+    //     if(err) throw err;
 
-         res.status(201).json({
-        message:"user register successfully",
-         user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-    },
-        token
-    })
-    })
-
-    // const token = jwt.sign(
-    //   {
+    //      res.status(201).json({
+    //     message:"user register successfully",
+    //      user: {
     //     id: user._id,
-    //   },
-    //   process.env.JWT_SECRET,
-    //   { expiresIn: "7d" },
-    // );
+    //     name: user.name,
+    //     email: user.email,
+    //     role: user.role
+    // },
+    //     token
+    // })
+    // })
 
-    // res.cookie("token", token);
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
 
-    // res.status(200).json({
-    //   message: "success",
-    //   success: true,
-    //   user,
-    //   token,
-    // });
+    res.cookie("token", token);
+
+    res.status(200).json({
+      message: "success",
+      success: true,
+      user,
+      token,
+    });
 
   } catch (error) {
     console.log(error);
@@ -71,23 +71,40 @@ export const handleLogin = async(req,res)=>{
             return res.status(400).json({message:"invalid credentials"})
         }
 
-         const payload = {user:{id:user._id,role:user.role}}
+    //      const payload = {user:{id:user._id,role:user.role}}
 
-    jwt.sign(payload,process.env.JWT_SECRET, {expiresIn:"24h"}, (err,token)=>{
-        if(err) throw err;
+    // jwt.sign(payload,process.env.JWT_SECRET, {expiresIn:"24h"}, (err,token)=>{
+    //     if(err) throw err;
 
-         res.status(200).json({
-        success: true,
-    message: "User login successfully",
-    user: {
+    //      res.status(200).json({
+    //     success: true,
+    // message: "User login successfully",
+    // user: {
+    //     id: user._id,
+    //     name: user.name,
+    //     email: user.email,
+    //     role: user.role
+    // },
+    //     token
+    // })
+    // })
+
+      const token = jwt.sign(
+      {
         id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-    },
-        token
-    })
-    })
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
+
+    res.cookie("token", token);
+
+    res.status(200).json({
+      message: "success",
+      success: true,
+      user,
+      token,
+    });
 
 
     }catch(error){
@@ -96,3 +113,26 @@ export const handleLogin = async(req,res)=>{
     }
 
 }
+
+export const getMe = async (req, res) => {
+    const user = req.user;
+
+    if (!user) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized"
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "User fetched successfully",
+        user: {
+            id: user._id,
+            email: user.email,
+            
+            name: user.name,
+            role: user.role
+        }
+    });
+};
