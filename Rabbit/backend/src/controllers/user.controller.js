@@ -4,7 +4,7 @@ import userModel from "../models/user.Model.js";
 import jwt from "jsonwebtoken";
 
 export const handleRegister = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password ,role } = req.body;
 
   try {
     // res.send({name,email,password})
@@ -13,7 +13,7 @@ export const handleRegister = async (req, res) => {
       return res.status(400).json({ message: "user already exists" });
     }
 
-    user = new userModel({ name, email, password });
+    user = new userModel({ name, email, password , role });
     await user.save();
 
     // const payload = {user:{id:user._id,role:user.role}}
